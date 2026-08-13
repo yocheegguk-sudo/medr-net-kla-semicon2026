@@ -1,0 +1,9 @@
+tensorflow>=2.15,<2.20
+numpy>=1.26,<2.0
+pandas
+scikit-learn
+scikit-image
+matplotlib
+pillow
+tqdm
+PyYAML
