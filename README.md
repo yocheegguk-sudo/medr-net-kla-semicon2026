@@ -235,7 +235,6 @@ pip install -r requirements.txt
 
 Each script expects `.npy` image pairs under matching filenames in `GT/` and `NoisyLR/` subfolders:
 
-```
 The dataset required for training and testing is available through Google Drive.
 
 ### Step 1 — Open the Google Drive Dataset
