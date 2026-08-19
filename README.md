@@ -236,13 +236,36 @@ pip install -r requirements.txt
 Each script expects `.npy` image pairs under matching filenames in `GT/` and `NoisyLR/` subfolders:
 
 ```
-train/
-├── GT/
-│   ├── image_0001.npy
-│   └── ...
-└── NoisyLR/
-    ├── image_0001.npy
-    └── ...
+The dataset required for training and testing is available through Google Drive.
+
+### Step 1 — Open the Google Drive Dataset
+
+[Download Dataset from Google Drive](https://drive.google.com/drive/folders/1DI7vPPtOE4xksbjxd1RMG-j8i4gqo84t?usp=sharing)
+
+### Step 2 — Download the `train` Folder
+
+From the Google Drive folder, download the **`train`** folder containing the paired ground-truth and degraded low-resolution images.
+
+### Step 3 — Extract the Dataset
+
+After downloading, extract the `train` folder and place it directly inside the **MEDR-Net project root directory**.
+
+The final project structure must be:
+
+```text
+MEDR-Net/
+│
+├── train/
+│   ├── GT/
+│   │   ├── *.npy
+│   │   ├── *.npy
+│   │   └── ...
+│   │
+│   └── NoisyLR/
+│       ├── *.npy
+│       ├── *.npy
+│       └── ...
+
 ```
 
 - GT values are normalized to `[0,1]`; NoisyLR values may extend slightly outside `[0,1]` (intentional, per KLA — handled by per-image min-max normalization in every script).
@@ -272,7 +295,7 @@ Reports PSNR, SSIM, and the LPIPS-style VGG proxy on the held-out test split, an
 
 ### 4. Run inference
 ```bash
-python infer.py --input-dir NoisyLR --checkpoint train/medr_net_best.h5 --output-dir Restoration_Results
+python run.py --input-dir NoisyLR --checkpoint weights/medr_net_best.h5 --output-dir Restoration_Results
 ```
 
 ## Repository structure
@@ -284,7 +307,7 @@ repository/
   train.py
   preprocess.py
   evaluate.py
-  infer.py
+  run.py
   results/
     architecture_diagram.png
     preprocessing_augmentation_samples.png
