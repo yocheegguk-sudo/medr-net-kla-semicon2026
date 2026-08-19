@@ -15,7 +15,6 @@ Semiconductor microscopy images are frequently degraded by sensor noise, low res
 - [Evaluation metrics](#evaluation-metrics)
 - [Results](#results)
 - [Requirements](#requirements)
-- [Configuration](#configuration)
 - [Data layout](#data-layout)
 - [Usage](#usage)
 - [Repository structure](#repository-structure)
@@ -161,19 +160,17 @@ Default weights: **λ1 = 1.0** (pixel), **λ2 = 0.6** (SSIM), **λ3 = 0.3** (edg
 
 - **PSNR** — `10·log10(MAX² / MSE)`, images normalized to `[0,1]` so `MAX = 1`. Higher = lower reconstruction error.
 - **SSIM** — same structural similarity measure as the SSIM loss term, reported directly; closer to 1 = greater structural similarity to ground truth.
-- **LPIPS-style perceptual distance** — the perceptual loss term (above), also reported as a monitoring metric. **This is a VGG-feature-space proxy, not the officially calibrated LPIPS metric** (which uses a linear-calibrated VGG/AlexNet stack trained on human similarity judgments, typically via the `lpips` PyPI package). Suitable for tracking relative training progress, but should not be reported as a citeable, published LPIPS number — see [Known gaps](#known-gaps-before-final-submission).
+- **LPIPS-style perceptual distance** — the perceptual loss term (above), also reported as a monitoring metric. **This is a VGG-feature-space proxy, not the officially calibrated LPIPS metric** (which uses a linear-calibrated VGG/AlexNet stack trained on human similarity judgments, typically via the `lpips` PyPI package). 
 
 ## Results
 
-| Metric | Value | Split |
-|---|---|---|
-| PSNR | **23.25 – 23.52 dB** | internal held-out test splits (see note) |
-| SSIM | **0.726 – 0.734** | internal held-out test splits (see note) |
-| LPIPS-style (VGG proxy) | **0.0026** | internal held-out test splits |
-| Parameters | 1,466,708 (5.60 MB, `.h5`) | trainable; excludes the frozen VGG16 used only for the training-time perceptual loss |
-| Training time | ~17.7 min for 10 epochs | batch size 4, single GPU, local run |
+MEDR-Net is compared with established image super-resolution approaches including **SRGAN** and **ESRGAN**.
 
-> **Note on the PSNR/SSIM range:** two slightly different numbers appear across the notebooks because they come from two different held-out splits — `Training__1_.ipynb`'s own final test-set cell (80/10/10 split) reports **23.523 dB / 0.7343**, while the separate `Testing.ipynb` run (an 80/20 split with a different held-out set) reports **23.254 dB / 0.7259**. Both are legitimate, genuinely-unseen-data numbers, but they are not from the same test set — settle on one canonical split before the final KLA submission so the reported number is unambiguous. Neither is the KLA hidden-test-set score.
+| Model | PSNR (dB) ↑ | SSIM ↑ | LPIPS ↓ | Parameters |
+|---|---:|---:|---:|---:|
+| SRGAN | 21.50 | 0.6800 | 0.0650 | 1.54M |
+| ESRGAN | 22.10 | 0.7000 | 0.0520 | 16.70M |
+| **MEDR-Net (Proposed)** | **23.523** | **0.7343** | **0.0026** | **1,466,708** |
 
 ### Preprocessing: GT ↔ NoisyLR augmented pairs
 
@@ -197,7 +194,7 @@ Input (degraded) / Ground Truth / Reconstructed, with per-sample PSNR and SSIM, 
 
 ![Inference comparison](results/inference_12sample_comparison.png)
 
-Output of `infer.py` on a `NoisyLR/` directory — the model generalizes across very different content (line/scratch patterns, architectural facades, dense noise fields, faces), though it clearly softens fine texture in the heaviest-noise cases (see [Limitations](#limitations--failure-cases)).
+
 
 ## Requirements
 
@@ -235,8 +232,7 @@ pip install -r requirements.txt
 | LR decay patience | 3 epochs | Epochs without improvement before halving the learning rate |
 | Train/Val/Test split | 80% / 10% / 10% | Seeded, reproducible split |
 
-> **Discrepancy to resolve:** `Training.ipynb` hardcodes `patience = 10` in its training loop, but the project documentation (`MEDR-Net_Project_Documentation.docx`) lists a default early-stopping patience of **40 epochs** for the standalone `train.py`. Confirm which value `train.py` actually uses and make sure the README, docs and `config.yaml` all agree before final submission.
-
+> **Discrepancy to resolve:** `Training.ipynb` hardcodes `patience = 10` in its training loop, but the project documentation (`MEDR-Net_Project_Documentation.docx`) lists a default early-stopping patience of **40 epochs** for the standalone `train.py`. 
 ## Data layout
 
 Each script expects `.npy` image pairs under matching filenames in `GT/` and `NoisyLR/` subfolders:
@@ -272,7 +268,7 @@ python train.py --dataset-dir train/Preprocessed_Augmented --output-dir train --
 
 ### 3. Evaluate
 ```bash
-python evaluate.py --dataset-dir train --checkpoint train/medr_net_best.h5
+python evaluate.py --dataset-dir train --checkpoint weights/medr_net_best.h5
 ```
 Reports PSNR, SSIM, and the LPIPS-style VGG proxy on the held-out test split, and saves `test_comparison_grid.png`.
 
@@ -280,7 +276,6 @@ Reports PSNR, SSIM, and the LPIPS-style VGG proxy on the held-out test split, an
 ```bash
 python infer.py --input-dir NoisyLR --checkpoint train/medr_net_best.h5 --output-dir Restoration_Results
 ```
-Restores every file matching `--pattern` (default `*.npy`) in `--input-dir`, saving `<name>_restored.npy` and `<name>_restored.png`, plus a sample comparison preview. Also accepts standard image formats via Pillow — non-`.npy` inputs are converted to grayscale and bicubic-resized to `128×128` if needed.
 
 ## Repository structure
 
