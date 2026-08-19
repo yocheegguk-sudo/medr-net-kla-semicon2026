@@ -19,8 +19,6 @@ Semiconductor microscopy images are frequently degraded by sensor noise, low res
 - [Usage](#usage)
 - [Repository structure](#repository-structure)
 - [External resources disclosure](#external-resources-disclosure)
-- [Known gaps before final submission](#known-gaps-before-final-submission)
-- [Limitations & failure cases](#limitations--failure-cases)
 
 ## Architecture
 
