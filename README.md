@@ -108,7 +108,7 @@ Raw GT / NoisyLR .npy pairs
    evaluate.py     →  PSNR / SSIM / LPIPS-proxy on held-out test split
         │
         ▼
-    infer.py       →  Restoration_Results/*_restored.{npy,png}
+    run.py       →  Restoration_Results/*_restored.{npy,png}
 ```
 
 **Stage 1 — Preprocessing & Augmentation (`preprocess.py`)**
@@ -133,7 +133,7 @@ Raw GT / NoisyLR .npy pairs
 15. Run inference over the full test set; compute aggregate PSNR, SSIM, and the VGG-feature-space LPIPS-style proxy.
 16. Sample test images and generate a side-by-side comparison grid (input / ground truth / restored), annotated with per-sample PSNR/SSIM.
 
-**Stage 4 — Inference (`infer.py`)**
+**Stage 4 — Inference (`run.py`)**
 17. Rebuild the architecture and load the trained checkpoint.
 18. Load each input file from a target directory (`.npy` or standard image formats), normalize, and bicubic-resize to `128×128` if needed.
 19. Run the forward pass to produce a restored, super-resolved output.
